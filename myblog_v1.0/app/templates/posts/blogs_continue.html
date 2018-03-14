@@ -1,0 +1,48 @@
+{% extends 'common/base.html' %}
+
+{% from 'common/macro.html' import pagination_show %}
+
+{% block title %}继续发表博客{% endblock %}
+
+{% block page_content %}
+    <form action="" method="post" class="form" role="form">
+        {{ form.hidden_tag() }}
+        <div class="form-group ">
+            {{ form.content(class="form-control", id="content") }}
+        </div>
+        {{ form.submit(class="btn btn-default",id="submit", type="submit") }}
+        <a href="{{ url_for('main.index') }}"><button class="btn btn-default" type="button">返回首页</button> </a>
+    </form>
+    <hr />
+    <h1>发表记录</h1>
+    <hr />
+    {% for p in posts %}
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{{ url_for('static', filename='upload/'+p.user.icon) }}" alt="头像" style="width: 64px; height: 64px;border-radius: 32px;">
+                </a>
+            </div>
+            <div class="media-body">
+                <div style="float: right;">
+                    发表于：{{ moment(p.timestamp).fromNow() }}
+                    <br/>
+                    <a href="{{ url_for('posts.comment',id=p.id) }}" style="float: right;">
+                        <button class="btn btn-primary" type="button">
+                             评论数：<span class="badge" id="{{ p.id }}">{{ p.count }}</span>
+                        </button>
+                    </a>
+                </div>
+                <h4 style="color: lightcoral" class="media-heading">{{ p.user.username }}</h4>
+                {{ p.content }}
+                <br/>
+            </div>
+        </div>
+        <hr/>
+    {% endfor %}
+
+    {# 显示分页导航条，想构造额外的GET参数，直接写在调用宏的地方即可 #}
+    {{ pagination_show(pagination, 'posts.blogs_continue') }}
+{% endblock %}
+
+

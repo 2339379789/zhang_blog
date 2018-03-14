@@ -1,0 +1,2 @@
+{{ user.username }} 您好：
+欢迎使用旺旺博客，点击右边激活二字即可使用登录，{{ url_for('user.activate',token=token,_external=True) }}激活

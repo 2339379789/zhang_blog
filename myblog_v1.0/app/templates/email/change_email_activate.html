@@ -1,0 +1,4 @@
+<h1>Hello {{user.username}}</h1>
+
+<p>账号邮箱修改 请点击确认</p>
+<a href="{{ url_for('user.change_email_activate',token=token,_external=True) }}">确认修改</a>

@@ -1,0 +1,71 @@
+{% extends 'common/base.html' %}
+
+{% from 'common/macro.html' import pagination_show %}
+
+{% block title %}
+留言
+{% endblock %}
+
+{% block page_content %}
+    {% for p in post %}
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{{ url_for('static', filename='upload/'+p.user.icon) }}" alt="头像"
+                         style="width: 64px; height: 64px;border-radius: 32px;">
+                </a>
+            </div>
+            <div class="media-body">
+                <div style="float: right;">发表于：{{ moment(p.timestamp).fromNow() }}</div>
+                <br/>
+                <a href="#" style="float: right;">
+                    <button class="btn btn-primary" type="button">
+                        留言数： <span class="badge">{{ count }}</span>
+                    </button>
+                </a>
+                <h4 class="media-heading" style="padding-top: 0px;">{{ p.user.username }}</h4>
+                <p>{{ p.content }}</p>
+            </div>
+            <hr/>
+        </div>
+    {% endfor %}
+    <form action="" method="post" class="form" role="form">
+        {{ form.hidden_tag() }}
+        <div class="form-group ">
+            {{ form.content(class="form-control", id="content") }}
+        </div>
+        {{ form.submit(class="btn btn-default",id="submit", type="submit") }}
+        {% for p in post %}
+            <a href="{{ url_for('posts.comment',id=p.rid) }}">
+                <button class="btn btn-default" type="button">返回</button>
+            </a>
+        {% endfor %}
+    </form>
+    <hr/>
+    <h1>全部回复</h1>
+    <hr/>
+    {% for p in posts %}
+        <div class="media">
+            <div class="media-left">
+                <a href="{{ url_for('posts.my_blogs') }}">
+                    <img class="media-object" src="{{ url_for('static', filename='upload/'+p.user.icon) }}" alt="头像"
+                         style="width: 64px; height: 64px;border-radius: 32px;">
+                </a>
+            </div>
+            <div class="media-body">
+                <div style="float: right;">发表于：{{ moment(p.timestamp).fromNow() }}</div>
+                <br/>
+                <a href="{{ url_for('posts.comment_to_comment',id=p.id) }}" style="float: right;">
+                    <button class="btn btn-primary" type="button">给他/她留言</button>
+                </a>
+                <h4 class="media-heading">{{ p.user.username }}：{{ p.content }}</h4>
+            </div>
+            <hr/>
+        </div>
+        <br/>
+    {% endfor %}
+    {# 显示分页导航条，想构造额外的GET参数，直接写在调用宏的地方即可 #}
+    {% for p in post %}
+        {{ pagination_show(pagination, 'posts.comment_to_comment',id=p.id) }}
+    {% endfor %}
+{% endblock %}

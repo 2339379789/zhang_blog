@@ -1,0 +1,58 @@
+{% extends 'common/base.html' %}
+
+{% from 'common/macro.html' import pagination_show %}
+
+{% block title %}首页{% endblock %}
+
+{% block page_content %}
+    {% for p in posts %}
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{{ url_for('static', filename='upload/'+p.user.icon) }}" alt="头像" style="width: 64px; height: 64px;border-radius: 32px;">
+                </a>
+            </div>
+            <div class="media-body">
+                <div style="float: right;">
+                    发表于：{{ moment(p.timestamp).fromNow() }}
+                    <br/>
+                    <a href="#" style="float: right;">
+                        <button class="btn btn-primary" type="button">
+                             人气度：<span class="badge" id="{{ p.id }}">{{ p.count }}</span>
+                        </button>
+                    </a>
+                </div>
+                <h4 class="media-heading">{{ p.user.username }}</h4>
+                <a href="{{ url_for('posts.comment', id=p.id) }}">{{ p.content }}</a>
+                <br/>
+                {% if current_user.is_authenticated %}
+                <div  url="{{ url_for('posts.collect', pid=p.id) }}" style="cursor: pointer;" class="collect label label-danger">{% if current_user.is_favorite(p.id) %}取消收藏{% else %}收藏{% endif %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <hr/>
+    {% endfor %}
+    {# 显示分页导航条，想构造额外的GET参数，直接写在调用宏的地方即可 #}
+    {{ pagination_show(pagination, 'main.index') }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        $(function () {
+            $('.collect').click(function () {
+                _this = this
+                $.get($(this).attr('url'), function (data,status) {
+                    if ($(_this).text() == '收藏') {
+                        $(_this).text('取消收藏')
+                        {#console.log(data)#}
+                        $('#' + String(data.pid)).text(data.data)
+                    } else {
+                        $(_this).text('收藏')
+                        $('#' + String(data.pid)).text(data.data)
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}
